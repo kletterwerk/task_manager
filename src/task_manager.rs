@@ -20,10 +20,16 @@ pub fn add_task(description: &str, category: &Option<String>, priority: &Option<
 }
 
 pub fn list_tasks(category_filter: &Option<String>) {
-    let tasks = load_tasks().expect("failed to load tasks");
+    let tasks = match load_tasks() {
+        Ok(tasks) => tasks,
+        Err(e) => {
+            eprintln!("Error loading tasks: {}", e);
+            return;
+        }
+    };
 
     let filtered_tasks: Vec<&Task> = if let Some(category) = category_filter {
-        tasks.iter().filter(|task| task.category.as_deref() == Some(category.as_str())).collect()
+        tasks.iter().filter(|task| task.category.as_deref().eq(&Some(category.as_str()))).collect()
     } else {
         tasks.iter().collect()
     };
@@ -32,14 +38,13 @@ pub fn list_tasks(category_filter: &Option<String>) {
         println!("no tasks to display.");
     } else {
         for task in filtered_tasks {
+            let category = task.category.as_deref().unwrap_or("None");
+            let priority = task.priority.as_deref().unwrap_or("None");
+            let status = if task.completed { "Completed" } else { "In Progress" };
+
             println!(
                 "[{}] {} (Category: {}, Priority: {}, Status: {})",
-                task.id,
-                task.description,
-                task.category.as_deref().unwrap_or("None"),
-                task.priority.as_deref().unwrap_or("None"),
-                if task.completed { "Completed" } else { "In Progress"
-                }
+                task.id, task.description, category, priority, status
             );
         }
     }
