@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "description": "Hey hey first task",
+    "category": "work",
+    "priority": "high",
+    "completed": false,
+    "created_at": "2024-10-01T12:16:04.014584Z"
+  }
+]
